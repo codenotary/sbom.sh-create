@@ -18,7 +18,3 @@ runs:
   args:
     - ${{ inputs.scan_type }}
     - ${{ inputs.target }}
-  env:
-    GITHUB_WORKSPACE: ${{ github.workspace }}
-    volumes:
-      - ${{ github.workspace }}:/app

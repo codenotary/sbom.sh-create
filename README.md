@@ -43,7 +43,7 @@ jobs:
         uses: codenotary/sbom.sh-create@main
         with:
           scan_type: 'grypefs' # Or other supported types like 'trivyfs', 'syftfs', etc.
-          target: '' # If needed for the scan type, specify the target here.
+          target: '/github/workspace' # If needed for the scan type, specify the target here.
 
       - name: Output SBOM URL
         run: echo "The SBOM can be found at ${{ steps.sbom_generation.outputs.sbom_url }}" # Reference the output from the sbom_generation step
