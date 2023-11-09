@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Generate SBOM
-        uses: actions/sbom-to-sbom-sh@main
+        uses: codenotary/sbom-sh-create@main
         with:
           scan_type: 'grypefs' # Or other supported types like 'trivyfs', 'syftfs', etc.
           target: '' # If needed for the scan type, specify the target here.
