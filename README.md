@@ -39,13 +39,14 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Generate SBOM
+        id: sbom_generation # Added an ID here to reference this step later
         uses: codenotary/sbom.sh-create@main
         with:
           scan_type: 'grypefs' # Or other supported types like 'trivyfs', 'syftfs', etc.
           target: '' # If needed for the scan type, specify the target here.
 
       - name: Output SBOM URL
-        run: echo "The SBOM can be found at ${{ steps.sbom_generation.outputs.sbom_url }}"
+        run: echo "The SBOM can be found at ${{ steps.sbom_generation.outputs.sbom_url }}" # Reference the output from the sbom_generation step
       
       # Additional steps like commenting on a PR can be added here
       
@@ -59,7 +60,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: "Generated SBOM is available at: ${{ env.SBOM_SHARE_URL }}"
+              body: "Generated SBOM is available at: ${{ steps.sbom_generation.outputs.sbom_url }}" # Reference the output from the sbom_generation step
             })
 ```
 

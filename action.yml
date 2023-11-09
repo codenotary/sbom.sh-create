@@ -9,6 +9,9 @@ inputs:
     description: 'Scan target (applicable for image scans)'
     required: false
     default: ''
+outputs:
+  sbom_url:
+    description: "The URL of the generated SBOM"
 runs:
   using: 'docker'
   image: 'docker://codenotary/sbom.sh:latest'
