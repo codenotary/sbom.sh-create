@@ -11,7 +11,7 @@ inputs:
     default: ''
 runs:
   using: 'docker'
-  image: 'Dockerfile'
+  image: 'docker://codenotary/sbom.sh:latest'
   args:
     - ${{ inputs.scan_type }}
     - ${{ inputs.target }}
