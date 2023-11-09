@@ -1,4 +1,4 @@
-name: "SBOM to SBOM.sh"
+name: "sbom.sh-create"
 description: "SBOM.sh - GitHub repository and container image SBOM with analysis and scan using Trivy, Syft or Grype"
 
 on:
