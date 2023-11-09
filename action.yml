@@ -1,4 +1,5 @@
-name: "SBOM.sh GitHub repository analysis and scan using Grype provided as a GitHub Action"
+name: "SBOM to SBOM.sh"
+description: "SBOM.sh SBOM sharing service - GitHub repository and container image analysis and scan using Trivy, Syft or Grype provided as a GitHub Action"
 
 on:
   workflow_dispatch:
