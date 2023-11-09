@@ -1,0 +1,41 @@
+name: "SBOM.sh GitHub repository analysis and scan using Grype provided as a GitHub Action"
+
+on:
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Type of scan (trivyfs, trivyimage, grypefs, grypeimage, syftfs, syftimage)'
+        required: true
+        default: 'trivyfs'
+      target:
+        description: 'Scan target (applicable for image scans)'
+        required: false
+        default: ''
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    name: "Generate SBOM and Retrieve URL"
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        if: github.event.inputs.scan_type == 'trivyfs' || github.event.inputs.scan_type == 'grypefs' || github.event.inputs.scan_type == 'syftfs'
+      
+      - name: Scan and generate SBOM
+        id: sbom_generation
+        run: |
+          if [ "${{ github.event.inputs.scan_type }}" = "trivyimage" ] || [ "${{ github.event.inputs.scan_type }}" = "grypeimage" ] || [ "${{ github.event.inputs.scan_type }}" = "syftimage" ]; then
+            RESPONSE=$(docker run --rm codenotary/sbom.sh:latest ${{ github.event.inputs.scan_type }} ${{ github.event.inputs.target }})
+          else
+            RESPONSE=$(docker run --rm -v ${{ github.workspace }}:/app codenotary/sbom.sh:latest ${{ github.event.inputs.scan_type }})
+          fi
+          echo "SBOM_RESPONSE=$RESPONSE" >> $GITHUB_ENV
+          echo "$RESPONSE"
+      
+      - name: Extract ShareUrl
+        run: |
+          SHARE_URL=$(echo $SBOM_RESPONSE | jq -r '.ShareUrl')
+          echo "SBOM_SHARE_URL=$SHARE_URL" >> $GITHUB_ENV
+          echo "Shareable URL: $SHARE_URL"
+      
+      # Additional steps to use the SBOM_SHARE_URL as required
