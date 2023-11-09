@@ -14,7 +14,7 @@ outputs:
     description: "The URL of the generated SBOM"
 runs:
   using: 'docker'
-  image: 'docker://codenotary/sbom.sh:latest'
+  image: 'codenotary/sbom.sh:latest'
   args:
     - ${{ inputs.scan_type }}
     - ${{ inputs.target }}
