@@ -39,10 +39,11 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Generate SBOM
-        uses: sbom-to-sbom-sh@v1
+        uses: actions/sbom-to-sbom-sh@v1
         with:
           scan_type: 'grypefs' # Or other supported types like 'trivyfs', 'syftfs', etc.
-      
+          target: '' # If needed for the scan type, specify the target here.
+
       - name: Output SBOM URL
         run: echo "The SBOM can be found at ${{ steps.sbom_generation.outputs.sbom_url }}"
       
