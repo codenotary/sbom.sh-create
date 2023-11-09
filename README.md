@@ -23,24 +23,7 @@ When you navigate to the Actions tab of your GitHub repository, you will see an 
 
 ## Usage
 
-To use this action, add the following workflow to your `.github/workflows` directory:
-
-```yaml
-name: "Generate and Upload SBOM"
-
-on: [push, pull_request, workflow_dispatch]
-
-jobs:
-  generate_sbom:
-    runs-on: ubuntu-latest
-    name: "SBOM Generation"
-    steps:
-      # ... workflow steps here
-```
-
-Customize your workflow by specifying the scanning tool and target using the `workflow_dispatch` event.
-
-### Workflow example
+To use this action, add the following to your `.github/workflows` directory in a file like `sbom-analysis.yml`:
 
 ```yaml
 name: "Generate and Upload SBOM"
@@ -56,18 +39,14 @@ jobs:
         uses: actions/checkout@v2
       
       - name: Generate SBOM
-        id: sbom_generation
-        run: |
-          RESPONSE=$(docker run --rm -v ${{ github.workspace }}:/app codenotary/sbom.sh:latest grypefs)
-          echo "SBOM_RESPONSE=$RESPONSE" >> $GITHUB_ENV
-      
-      - name: Extract ShareUrl
-        run: |
-          SHARE_URL=$(echo $SBOM_RESPONSE | jq -r '.ShareUrl')
-          echo "SBOM_SHARE_URL=$SHARE_URL" >> $GITHUB_ENV
+        uses: sbom-to-sbom-sh@v1
+        with:
+          scan_type: 'grypefs' # Or other supported types like 'trivyfs', 'syftfs', etc.
       
       - name: Output SBOM URL
-        run: echo "The SBOM can be found at $SBOM_SHARE_URL"    
+        run: echo "The SBOM can be found at ${{ steps.sbom_generation.outputs.sbom_url }}"
+      
+      # Additional steps like commenting on a PR can be added here
       
       - name: Comment on Pull Request
         if: github.event_name == 'pull_request'
