@@ -64,6 +64,7 @@ runs:
         fi
 
         echo "SBOM_RESPONSE=$RESPONSE" >> $GITHUB_ENV
+        SBOM_SHARE_URL=$(echo $SBOM_RESPONSE | jq -r '.ShareUrl')
         echo "The SBOM can be found at $SBOM_SHARE_URL"
       shell: bash
       env:
