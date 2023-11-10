@@ -1,5 +1,5 @@
 # sbom.sh-create
-SBOM.sh container analysis and scan using Grype provided as a GitHub Action
+SBOM.sh container and repository SBOM generation & sharing + vulnerability scan using Grype, Syft or Trivy provided as a GitHub Action
 # SBOM.sh GitHub Action
 
 This GitHub Action integrates with [sbom.sh](https://sbom.sh/) to generate and upload Software Bill of Materials (SBOM) for your projects. Utilizing the `codenotary/sbom.sh` container image, this action supports various open-source SBOM tools such as Trivy, Grype, and Syft.
