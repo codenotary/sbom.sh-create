@@ -27,41 +27,32 @@ To use this action, add the following to your `.github/workflows` directory in a
 
 ```yaml
 name: "Generate and Upload SBOM"
-
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  generate_sbom:
+  sbom-scan:
     runs-on: ubuntu-latest
-    name: "SBOM Generation"
+    name: Generate and Upload SBOM
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-      
+
       - name: Generate SBOM
-        id: sbom_generation # Added an ID here to reference this step later
         uses: codenotary/sbom.sh-create@main
         with:
-          scan_type: 'grypefs' # Or other supported types like 'trivyfs', 'syftfs', etc.
-          target: '/github/workspace' # If needed for the scan type, specify the target here.
+          scan_type: 'grypefs'
+          target: '.' # Target grypefs, syftfs and trivyfs should be "." (current directory), for container images it should be the image name and location
 
       - name: Output SBOM URL
-        run: echo "The SBOM can be found at ${{ steps.sbom_generation.outputs.sbom_url }}" # Reference the output from the sbom_generation step
-      
-      # Additional steps like commenting on a PR can be added here
-      
-      - name: Comment on Pull Request
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v3
-        with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
-          script: |
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: "Generated SBOM is available at: ${{ steps.sbom_generation.outputs.sbom_url }}" # Reference the output from the sbom_generation step
-            })
+        run: echo "The SBOM can be found at ${{ steps.sbom_generation.outputs.sbom_url }}"
+
 ```
 
 ## Inputs
