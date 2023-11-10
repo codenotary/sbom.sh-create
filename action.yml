@@ -17,7 +17,7 @@ runs:
   steps:
     - name: Install Dependencies
       run: |
-        apk add --update --no-cache curl jq
+        apt install -y curl
         if [ "${{ inputs.scan_type }}" = "trivyfs" ] || [ "${{ inputs.scan_type }}" = "trivyimage" ]; then
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
         fi
