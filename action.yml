@@ -61,8 +61,6 @@ runs:
 
     - name: Output SBOM URL
       run: |
-        echo "SBOM_RESPONSE: ${{ env.SBOM_RESPONSE }}"
-        SBOM_SHARE_URL=$(echo '${{ env.SBOM_RESPONSE }}' | jq -r '.ShareUrl')
-        echo "Extracted SBOM_SHARE_URL: $SBOM_SHARE_URL"
+        SBOM_SHARE_URL=$(echo $SBOM_RESPONSE | jq -r '.ShareUrl')
         echo "The SBOM can be found at $SBOM_SHARE_URL"
       shell: bash
