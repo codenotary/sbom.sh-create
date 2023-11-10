@@ -27,31 +27,26 @@ To use this action, add the following to your `.github/workflows` directory in a
 
 ```yaml
 name: "Generate and Upload SBOM"
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  sbom-scan:
+  generate_sbom:
     runs-on: ubuntu-latest
-    name: Generate and Upload SBOM
+    name: "SBOM Generation"
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-
+      
       - name: Generate SBOM
+        id: sbom_generation
         uses: codenotary/sbom.sh-create@main
         with:
           scan_type: 'grypefs'
-          target: '.' # Target grypefs, syftfs and trivyfs should be "." (current directory), for container images it should be the image name and location
+          target: '.' # Assuming you want to scan the entire repository
 
       - name: Output SBOM URL
-        run: echo "The SBOM can be found at ${{ steps.sbom_generation.outputs.sbom_url }}"
+        run: echo "The SBOM can be found at $SBOM_SHARE_URL"
 
 ```
 
