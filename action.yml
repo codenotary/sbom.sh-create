@@ -63,6 +63,7 @@ runs:
     - name: Set ShareUrl
       run: |
         echo "SBOM_SHARE_URL=${SBOM_RESPONSE}" >> $GITHUB_ENV
-
+      shell: bash
     - name: Output SBOM URL
       run: echo "The SBOM can be found at $SBOM_SHARE_URL"
+      shell: bash
