@@ -33,19 +33,19 @@ runs:
       run: |
         case "${{ inputs.scan_type }}" in
           trivyfs)
-            scan_cmd="trivy fs /app -f cyclonedx --scanners vuln -q"
+            scan_cmd="trivy fs ${{ inputs.target }} -f cyclonedx --scanners vuln -q"
             ;;
           trivyimage)
             scan_cmd="trivy image ${{ inputs.target }} -f cyclonedx --scanners vuln -q"
             ;;
           grypefs)
-            scan_cmd="grype /app -o cyclonedx-json -q"
+            scan_cmd="grype ${{ inputs.target }} -o cyclonedx-json -q"
             ;;
           grypeimage)
             scan_cmd="grype registry:${{ inputs.target }} -o cyclonedx-json -q"
             ;;
           syftfs)
-            scan_cmd="syft /app -o cyclonedx-json -q"
+            scan_cmd="syft ${{ inputs.target }} -o cyclonedx-json -q"
             ;;
           syftimage)
             scan_cmd="syft registry:${{ inputs.target }} -o cyclonedx-json -q"
