@@ -52,7 +52,7 @@ runs:
             scan_cmd="syft registry:${{ inputs.target }} -o cyclonedx-json -q"
             ;;
         esac
-        if [[ "grypefs" == "trivyfs" || "grypefs" == "grypefs" || "grypefs" == "syftfs" ]]; then
+        if [[ "${{ inputs.scan_type }}" == "trivyfs" || "${{ inputs.scan_type }}" == "grypefs" || "${{ inputs.scan_type }}" == "syftfs" ]]; then
           SCAN_OUTPUT=$(eval "$scan_cmd")
           MODIFIED_OUTPUT=$(echo "$SCAN_OUTPUT" | jq --arg git_commit "$GIT_COMMIT" --arg repo_slug "$REPO_SLUG" '
             .metadata.component."bom-ref" = $git_commit |
@@ -72,7 +72,7 @@ runs:
         SCAN_TYPE: ${{ inputs.scan_type }}
         TARGET: ${{ inputs.target }}
         GITHUB_WORKSPACE: ${{ github.workspace }}
-        
+
     - name: Output SBOM URL
       run: echo "The SBOM can be found at $SBOM_SHARE_URL"
       shell: bash
