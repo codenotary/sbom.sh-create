@@ -36,7 +36,7 @@ jobs:
     name: "SBOM Generation"
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       
       - name: Generate SBOM
         id: sbom_generation
