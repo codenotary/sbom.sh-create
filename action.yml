@@ -13,8 +13,56 @@ outputs:
   sbom_url:
     description: "The URL of the generated SBOM"
 runs:
-  using: 'docker'
-  image: 'docker://codenotary/sbom.sh:latest'
-  args:
-    - ${{ inputs.scan_type }}
-    - ${{ inputs.target }}
+  using: 'composite'
+  steps:
+    - name: Install Dependencies
+      run: |
+        apk add --update --no-cache curl jq
+        if [ "${{ inputs.scan_type }}" = "trivyfs" ] || [ "${{ inputs.scan_type }}" = "trivyimage" ]; then
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+        fi
+        if [ "${{ inputs.scan_type }}" = "grypefs" ] || [ "${{ inputs.scan_type }}" = "grypeimage" ]; then
+          curl -sSfL https://raw.githubusercontent.com/anchore/grype/main/install.sh | sh -s -- -b /usr/local/bin
+        fi
+        if [ "${{ inputs.scan_type }}" = "syftfs" ] || [ "${{ inputs.scan_type }}" = "syftimage" ]; then
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+        fi
+      shell: bash
+
+    - name: Run SBOM Scan
+      run: |
+        case "${{ inputs.scan_type }}" in
+          trivyfs)
+            scan_cmd="trivy fs /app -f cyclonedx --scanners vuln -q"
+            ;;
+          trivyimage)
+            scan_cmd="trivy image ${{ inputs.target }} -f cyclonedx --scanners vuln -q"
+            ;;
+          grypefs)
+            scan_cmd="grype /app -o cyclonedx-json -q"
+            ;;
+          grypeimage)
+            scan_cmd="grype registry:${{ inputs.target }} -o cyclonedx-json -q"
+            ;;
+          syftfs)
+            scan_cmd="syft /app -o cyclonedx-json -q"
+            ;;
+          syftimage)
+            scan_cmd="syft registry:${{ inputs.target }} -o cyclonedx-json -q"
+            ;;
+        esac
+        RESPONSE=$(eval "$scan_cmd" | curl -sd @- "$SBOM_SH_SERVER" -H "Content-Type: application/json")
+        echo "SBOM_RESPONSE=$RESPONSE" >> $GITHUB_ENV
+      shell: bash
+      env:
+        SBOM_SH_SERVER: 'https://sbom.sh'
+        SCAN_TYPE: ${{ inputs.scan_type }}
+        TARGET: ${{ inputs.target }}
+        GITHUB_WORKSPACE: ${{ github.workspace }}
+
+    - name: Set ShareUrl
+      run: |
+        echo "SBOM_SHARE_URL=${SBOM_RESPONSE}" >> $GITHUB_ENV
+
+    - name: Output SBOM URL
+      run: echo "The SBOM can be found at $SBOM_SHARE_URL"
