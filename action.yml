@@ -32,7 +32,6 @@ runs:
       run: |
         GIT_COMMIT=$(git rev-parse HEAD)
         REPO_SLUG=$(basename $(git rev-parse --show-toplevel))
-
         case "${{ inputs.scan_type }}" in
           trivyfs)
             scan_cmd="trivy fs ${{ inputs.target }} -f cyclonedx --scanners vuln -q"
@@ -53,7 +52,6 @@ runs:
             scan_cmd="syft registry:${{ inputs.target }} -o cyclonedx-json -q"
             ;;
         esac
-
         if [[ "${{ inputs.scan_type }}" == "trivyfs" || "${{ inputs.scan_type }}" == "grypefs" || "${{ inputs.scan_type }}" == "syftfs" ]]; then
           SCAN_OUTPUT=$(eval "$scan_cmd")
           MODIFIED_OUTPUT=$(echo "$SCAN_OUTPUT" | jq --arg git_commit "$GIT_COMMIT" --arg repo_slug "$REPO_SLUG" '
