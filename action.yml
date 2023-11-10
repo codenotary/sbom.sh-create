@@ -59,11 +59,9 @@ runs:
         TARGET: ${{ inputs.target }}
         GITHUB_WORKSPACE: ${{ github.workspace }}
 
-    - name: Set ShareUrl
+    - name: Set and Output SBOM URL
       run: |
         SBOM_SHARE_URL=$(echo '${{ env.SBOM_RESPONSE }}' | jq -r '.ShareUrl')
-        echo "SBOM_SHARE_URL=$SBOM_SHARE_URL" >> $GITHUB_ENV
-      shell: bash
-    - name: Output SBOM URL
-      run: echo "The SBOM can be found at $SBOM_SHARE_URL"
+        echo "SBOM_SHARE_URL=$SBOM_SHARE_URL"
+        echo "The SBOM can be found at $SBOM_SHARE_URL"
       shell: bash
