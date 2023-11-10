@@ -28,8 +28,11 @@ runs:
         fi
       shell: bash
 
-    - name: Run SBOM Scan
+    - name: Generate SBOM and return unique https://sbom.sh URL
       run: |
+        GIT_COMMIT=$(git rev-parse HEAD)
+        REPO_SLUG=$(basename $(git rev-parse --show-toplevel))
+
         case "${{ inputs.scan_type }}" in
           trivyfs)
             scan_cmd="trivy fs ${{ inputs.target }} -f cyclonedx --scanners vuln -q"
@@ -50,7 +53,18 @@ runs:
             scan_cmd="syft registry:${{ inputs.target }} -o cyclonedx-json -q"
             ;;
         esac
-        RESPONSE=$(eval "$scan_cmd" | curl -sd @- "$SBOM_SH_SERVER" -H "Content-Type: application/json")
+
+        if [[ "${{ inputs.scan_type }}" == "trivyfs" || "${{ inputs.scan_type }}" == "grypefs" || "${{ inputs.scan_type }}" == "syftfs" ]]; then
+          SCAN_OUTPUT=$(eval "$scan_cmd")
+          MODIFIED_OUTPUT=$(echo "$SCAN_OUTPUT" | jq --arg git_commit "$GIT_COMMIT" --arg repo_slug "$REPO_SLUG" '
+            .metadata.component."bom-ref" = $git_commit |
+            .metadata.component.name = $repo_slug
+          ')
+          RESPONSE=$(echo "$MODIFIED_OUTPUT" | curl -sd @- "$SBOM_SH_SERVER" -H "Content-Type: application/json")
+        else
+          RESPONSE=$(eval "$scan_cmd" | curl -sd @- "$SBOM_SH_SERVER" -H "Content-Type: application/json")
+        fi
+
         echo "SBOM_RESPONSE=$RESPONSE" >> $GITHUB_ENV
       shell: bash
       env:
@@ -58,9 +72,3 @@ runs:
         SCAN_TYPE: ${{ inputs.scan_type }}
         TARGET: ${{ inputs.target }}
         GITHUB_WORKSPACE: ${{ github.workspace }}
-
-    - name: Output SBOM URL
-      run: |
-        SBOM_SHARE_URL=$(echo $SBOM_RESPONSE | jq -r '.ShareUrl')
-        echo "The SBOM can be found at $SBOM_SHARE_URL"
-      shell: bash
