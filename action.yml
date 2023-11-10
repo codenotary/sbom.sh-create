@@ -64,6 +64,7 @@ runs:
         fi
 
         echo "SBOM_RESPONSE=$RESPONSE" >> $GITHUB_ENV
+        echo "The SBOM can be found at $SBOM_SHARE_URL"
       shell: bash
       env:
         SBOM_SH_SERVER: 'https://sbom.sh'
