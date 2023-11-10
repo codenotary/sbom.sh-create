@@ -59,13 +59,12 @@ runs:
             .metadata.component.name = $repo_slug
           ')
           RESPONSE=$(echo "$MODIFIED_OUTPUT" | curl -sd @- "$SBOM_SH_SERVER" -H "Content-Type: application/json")
-          SBOM_SHARE_URL=$(echo "$RESPONSE" | jq -r '.ShareUrl')
-          echo "SBOM_SHARE_URL=$SBOM_SHARE_URL" >> $GITHUB_ENV
         else
           RESPONSE=$(eval "$scan_cmd" | curl -sd @- "$SBOM_SH_SERVER" -H "Content-Type: application/json")
         fi
 
-        echo "SBOM_RESPONSE=$RESPONSE" >> $GITHUB_ENV
+          SBOM_SHARE_URL=$(echo "$RESPONSE" | jq -r '.ShareUrl')
+          echo "SBOM_SHARE_URL=$SBOM_SHARE_URL" >> $GITHUB_ENV
       shell: bash
       env:
         SBOM_SH_SERVER: 'https://sbom.sh'
