@@ -1,4 +1,4 @@
-name: "sbom.sh-create"
+name: "sbom.sh Generate, Scan and Share SBOM"
 description: "SBOM.sh - Generate and upload SBOM to sbom.sh using Trivy, Syft, or Grype"
 inputs:
   scan_type:
